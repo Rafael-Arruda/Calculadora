@@ -113,7 +113,8 @@ export default class App extends Component {
 
   calculate = () => {
     try{
-      const result = Number(eval(this.state.expression));
+      const exp = this.state.expression.replace('x','*');
+      const result = Number(eval(exp));
       if(parseInt(result) === parseFloat(result)){
         this.setState({
           expression: String(result),
@@ -179,7 +180,7 @@ export default class App extends Component {
             <button onClick={this.handleNumbers} value={7}>7</button>
             <button onClick={this.handleNumbers} value={8}>8</button>
             <button onClick={this.handleNumbers} value={9}>9</button>
-            <button onClick={this.handleOperators} className='operator' value={'*'}>x</button>
+            <button onClick={this.handleOperators} className='operator' value={'x'}>x</button>
             <button onClick={this.handleNumbers} value={4}>4</button>
             <button onClick={this.handleNumbers} value={5}>5</button>
             <button onClick={this.handleNumbers} value={6}>6</button>
