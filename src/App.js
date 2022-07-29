@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import styled from 'styled-components';
+import imageBack from './assets/voltar.png';
 
 export const Container = styled.div`
   width: 100%;
@@ -21,7 +22,6 @@ export const Calculator = styled.div`
   border-radius: 10px;
   overflow: hidden;
   font-family: Verdana, Geneva, Tahoma, sans-serif;
-
   .result {
     width: 100%;
     padding: 10px;
@@ -29,7 +29,6 @@ export const Calculator = styled.div`
     font-size: 40px;
     text-align: right;
   }
-
   .wrapper {
     width: 100%;
     height: 75%;
@@ -45,9 +44,17 @@ export const Calculator = styled.div`
       background-color: #343434;
       color: #fff;
       font-size: 1.2rem;
+      font-weight: 600;
       cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: 0.3s all;
     }
-
+    button:active {
+      transform: scale(0.85);
+      background-color: #000;
+    }
     .special_operator {
       background-color: #a6a6a6;
       color: #000;
@@ -69,7 +76,7 @@ export const Title = styled.h1`
 export default class App extends Component {
 
   state = {
-    expression: 0,
+    expression: '0',
     initExpression: true,
   }
 
@@ -87,26 +94,53 @@ export default class App extends Component {
   }
 
   handleOperators = (e) => {
-    this.setState({
-      expression: this.state.expression + e.target.value,
-      initExpression: false,
-    })
+    
+    const exp = this.state.expression;
+    const lastCharOfExpression = exp.substring(exp.length - 1);
+    
+    if(isNaN(lastCharOfExpression)){
+      this.setState({
+        expression: exp.substring(0, exp.length - 1) + e.target.value,
+        initExpression: false, 
+      })
+    }else{
+      this.setState({
+        expression: this.state.expression + e.target.value,
+        initExpression: false,
+      })
+    }
   }
 
   calculate = () => {
-    this.setState({
-      expression: Number(eval(this.state.expression)),
-      initExpression: true,
-    })
+    try{
+      const result = Number(eval(this.state.expression));
+      if(parseInt(result) === parseFloat(result)){
+        this.setState({
+          expression: String(result),
+          initExpression: true,
+        })
+      }else{
+        this.setState({
+          expression: String(Number(result).toFixed(2)),
+          initExpression: true,
+        })
+      }
+    }catch(error){
+      console.log(error);
+    }
   }
 
-  changeSign = () => {
-    if(!isNaN(this.state.expression)){
+  handleBack = () => {
+    if(this.state.expression.length === 1){
       this.setState({
-        expression: this.state.expression * -1,
+        expression: '0',
+        initExpression: true,
       })
     }else {
-      console.log('Não é um número')
+      const exp = this.state.expression;
+      this.setState({
+        expression: exp.substring(0, exp.length - 1),
+      })
     }
   }
 
@@ -137,7 +171,9 @@ export default class App extends Component {
           </div>
           <div className='wrapper'>
             <button onClick={this.cleanExpression} className='special_operator'>AC</button>
-            <button onClick={this.changeSign} className='special_operator'>+/-</button>
+            <button onClick={this.handleBack} className='special_operator'>
+              <img src={imageBack}/>
+            </button>
             <button onClick={this.percentage} className='special_operator'>%</button>
             <button onClick={this.handleOperators} className='operator' value={'/'}>/</button>
             <button onClick={this.handleNumbers} value={7}>7</button>
@@ -153,7 +189,7 @@ export default class App extends Component {
             <button onClick={this.handleNumbers} value={3}>3</button>
             <button onClick={this.handleOperators} className='operator' value={'+'}>+</button>
             <button onClick={this.handleNumbers} value={0}>0</button>
-            <button onClick={this.handleNumbers} value={'.'}>,</button>
+            <button onClick={this.handleOperators} value={'.'}>,</button>
             <button style={{visibility: 'hidden'}}>,</button>
             <button onClick={this.calculate} className='operator' value={'='}>=</button>
           </div>
